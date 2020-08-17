@@ -8,13 +8,11 @@ Created on Wed Nov 20 21:28:12 2019
 #Project Euler Problem 49
 
 import numpy as np
-from itertools import permutations
 
-def generatePermutations(n):
-    return [int(''.join(p)) for p in permutations(str(n))]
-
+# Initialize prime dictionary
 PRIME_DICTIONARY = {1:False,2:True,3:True,4:False}
 
+# Given prime dictionary, check if n is prime
 def isPrime(n,primeDictionary):
     if n not in primeDictionary:
         if n%2 == 0:
@@ -30,27 +28,25 @@ def isPrime(n,primeDictionary):
             for k in range(1,100):
                 primeDictionary[n+k*n] = False
     return primeDictionary[n]
+    
 
-candidate = 1001
-primeTriples = []
+# Checks if two integers are digital permutations of one another
+def isPermutation(x,y):
+    return sorted(str(x)) == sorted(str(y))
 
-while candidate < 10000:
-    if isPrime(candidate, PRIME_DICTIONARY):
-        candidatePermutations = generatePermutations(candidate)
-        primePerms = [candidate]
-        for perm in candidatePermutations:
-            if isPrime(perm, PRIME_DICTIONARY) and perm > 1000:
-                primePerms.append(perm)
-        if len(primePerms) >= 3:
-            primePerms.sort()
-            if primePerms not in primeTriples:
-                primeTriples.append(primePerms)
-                
-    candidate += 2
-
-sequences = []
-for triple in primeTriples:
-    if triple[2] - triple[1] == triple[1] - triple[0]:
-        sequences.append(triple)
-        
-print(sequences)
+# Iterate through all 4-digit integers. When a prime k is found, check
+# k+3330 and k+6660 to see if they are primes as well as permutations of k.
+# k=1487 is a known solution, so skip that one.
+def findPrimeTriples(primeDictionary):
+    for n in range(1000,10000):
+        if isPrime(n,primeDictionary):
+            if isPrime(n+3330,primeDictionary):
+                if isPrime(n+6660,primeDictionary):
+                    if isPermutation(n, n+3330) and isPermutation(n, n+6660):
+                        if n != 1487:
+                            return n
+                            stop
+                        
+if __name__ == "__main__":
+    n = findPrimeTriples(PRIME_DICTIONARY)
+    print(str(n)+str(n+3330)+str(n+6660))
